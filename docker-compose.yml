@@ -1,0 +1,28 @@
+services:
+    db:
+        image: postgres
+        restart: always
+        container_name: suivi_db
+        volumes:
+            - pg-data:/var/lib/postgresql/data
+        environment:
+            POSTGRES_USER: phoenix
+            POSTGRES_PASSWORD: phx_auger
+            POSTGRES_DB: suivi
+    
+    api:
+        container_name: suivi-dashboard
+        restart: always
+        #image: augerclement/suivi_dashboard:1.0.0
+        build: .
+        depends_on:
+            - db
+        ports:
+            - 4000:4000
+        environment:
+            DATABASE_URL: "ecto://phoenix:phx_auger@db/suivi" # Template : "ecto://db_user:db_password@ip_or_compose_service_name/db_name"
+            SECRET_KEY_BASE: b2UciwAy2Nl9hUKbbjruHLuB9RKTWy3Cmi92CFqkVlyNeY3P7BVqj66RkV78EEPW # Can literally be anything, but generally generated randomly by tools like mix phx.gen.secret
+
+volumes:
+    pg-data:
+        external: true # Must use "docker volume create --name=pg-data" before
